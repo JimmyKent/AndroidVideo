@@ -1,2 +1,0 @@
-# AndroidVideo
-AndroidVideo
