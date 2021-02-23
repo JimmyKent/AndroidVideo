@@ -28,7 +28,28 @@
 
     <com.phatty.androidvideo.CustomShowPicture
         android:id="@+id/custom_view"
+        android:layout_width="48dp"
+        android:layout_height="48dp" />
+
+    <Button
+        android:id="@+id/btn_control"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/start_record" />
+
+    <Button
+        android:id="@+id/btn_convert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="pcm转wav" />
+
+    <Button
+        android:id="@+id/btn_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/start_play" />
 
 </LinearLayout>
