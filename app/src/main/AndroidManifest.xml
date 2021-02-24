@@ -28,6 +28,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".PreviewActivity" />
+        <activity android:name=".H264PlayerActivity" />
     </application>
 
 </manifest>

@@ -24,6 +24,10 @@ class PreviewActivity : AppCompatActivity(), SurfaceHolder.Callback, Camera.Prev
     private var encoder: H264Encoder? = null
     private lateinit var surfaceHolder: SurfaceHolder
 
+    private val width = 1280
+    private val height = 720
+    private val frameRate = 30
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.aty_preview)
@@ -67,7 +71,7 @@ class PreviewActivity : AppCompatActivity(), SurfaceHolder.Callback, Camera.Prev
         camera!!.setDisplayOrientation(90)
         val parameters: Camera.Parameters = camera!!.getParameters()
         parameters.previewFormat = ImageFormat.NV21
-        parameters.setPreviewSize(1280, 720)
+        parameters.setPreviewSize(width, height)
 
         try {
             camera?.setParameters(parameters)
@@ -77,9 +81,7 @@ class PreviewActivity : AppCompatActivity(), SurfaceHolder.Callback, Camera.Prev
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        val width = 1280
-        val height = 720
-        val frameRate = 30
+
         encoder = H264Encoder(width, height, frameRate)
         encoder?.startEncoder()
     }

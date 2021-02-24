@@ -135,6 +135,10 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, PreviewActivity::class.java))
         }
 
+        val playH264: Button = findViewById(R.id.btn_to_play_h264)
+        playH264.setOnClickListener {
+            startActivity(Intent(this, H264PlayerActivity::class.java))
+        }
 
     }
 

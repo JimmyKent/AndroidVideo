@@ -59,4 +59,11 @@
         android:layout_marginTop="10dp"
         android:text="打开相机预览页面" />
 
+    <Button
+        android:id="@+id/btn_to_play_h264"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="播放录制的H264" />
+
 </LinearLayout>

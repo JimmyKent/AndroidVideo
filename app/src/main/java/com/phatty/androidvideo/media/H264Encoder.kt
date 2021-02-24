@@ -4,7 +4,6 @@ import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.os.Environment
-import android.provider.MediaStore.MediaColumns.MIME_TYPE
 import android.util.Log
 import java.io.BufferedOutputStream
 import java.io.File
@@ -16,6 +15,7 @@ import java.util.concurrent.ArrayBlockingQueue
 /**
  * 最后生成的 .h264 文件不能直接在播放器播放，但是可以通过 ffplay 播放
  * ffplay test.h264
+ * https://www.jianshu.com/p/a2c291c1df7f Camera 视频采集，H264 编码保存
  * @author jinguochong
  * @since  2021/2/23
  */
@@ -29,17 +29,11 @@ class H264Encoder(width: Int, height: Int, frameRate: Int) {
     private var outputStream: BufferedOutputStream? = null
     var yuv420Queue = ArrayBlockingQueue<ByteArray>(10)
 
-    /***
-     * 构造函数
-     * @param width
-     * @param height
-     * @param framerate
-     */
     init {
         this.width = width
         this.height = height
         this.framerate = frameRate
-        val mediaFormat = MediaFormat.createVideoFormat(MIME_TYPE, width, height)
+        val mediaFormat = MediaFormat.createVideoFormat("video/avc", width, height)
         mediaFormat.setInteger(
             MediaFormat.KEY_COLOR_FORMAT,
             MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar
