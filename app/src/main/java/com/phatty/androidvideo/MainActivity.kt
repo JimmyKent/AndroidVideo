@@ -1,6 +1,7 @@
 package com.phatty.androidvideo
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -39,7 +40,9 @@ class MainActivity : AppCompatActivity() {
      */
     private val permissions: Array<String> = arrayOf(
         Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.CAMERA,
+        Manifest.permission.READ_EXTERNAL_STORAGE
     )
 
     /**
@@ -127,6 +130,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        val preview: Button = findViewById(R.id.btn_to_preview)
+        preview.setOnClickListener {
+            startActivity(Intent(this, PreviewActivity::class.java))
+        }
+
+
     }
 
     private fun startRecord() {
@@ -149,7 +158,7 @@ class MainActivity : AppCompatActivity() {
         audioRecord?.startRecording()
         isRecording = true
 
-        // TODO: pcm数据无法直接播放，保存为WAV格式。
+        // pcm数据无法直接播放，保存为WAV格式。
         Thread(Runnable {
             var os: FileOutputStream? = null
             try {
@@ -296,7 +305,6 @@ class MainActivity : AppCompatActivity() {
                 Log.d("MainActivity", "Playing")
             }
         }
-
 
 
     }
