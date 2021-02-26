@@ -4,6 +4,7 @@ import android.media.MediaCodec
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.os.SystemClock
+import android.util.Log
 import android.view.Surface
 import java.io.IOException
 
@@ -40,6 +41,7 @@ class VideoPlayer : Runnable {
     override fun run() {
         play()
     }
+
     private fun play() {
         val videoExtractor = MediaExtractor()
         var videoCodec: MediaCodec? = null
@@ -76,6 +78,9 @@ class VideoPlayer : Runnable {
                 val byteBuffer = inputBuffers[inputIndex]
                 val sampleSize = videoExtractor.readSampleData(byteBuffer, 0)
                 if (sampleSize > 0) {
+                    // 可以通过ffprobe获取每帧信息 https://www.jianshu.com/p/ba5afa513798
+                    // ffprobe -show_frames 1587818594588915.mp4 > test.log
+                    Log.i("sampleTime", "video: ${videoExtractor.sampleTime}")
                     videoCodec.queueInputBuffer(
                         inputIndex,
                         0,
@@ -94,8 +99,7 @@ class VideoPlayer : Runnable {
                     )
                 }
             }
-            val outputIndex = videoCodec.dequeueOutputBuffer(bufferInfo, 10000)
-            when (outputIndex) {
+            when (val outputIndex = videoCodec.dequeueOutputBuffer(bufferInfo, 10000)) {
                 MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED -> videoCodec.outputBuffers
                 MediaCodec.INFO_OUTPUT_FORMAT_CHANGED -> {
                 }

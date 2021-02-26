@@ -1,6 +1,7 @@
 package com.phatty.androidvideo.muxer
 
 import android.media.*
+import android.util.Log
 import java.io.IOException
 import java.nio.ByteBuffer
 
@@ -8,7 +9,7 @@ import java.nio.ByteBuffer
  * @author jinguochong
  * @since  2021/2/26
  */
-class AudioPlayer : Runnable{
+class AudioPlayer : Runnable {
 
     private var mAudioInputBufferSize = 0
     private var mAudioTrack: AudioTrack? = null
@@ -45,6 +46,7 @@ class AudioPlayer : Runnable{
         } catch (e: IOException) {
             e.printStackTrace()
         }
+        // audioExtractor.trackCount 得到源文件的轨道数
         for (i in 0 until audioExtractor.trackCount) {
             val mediaFormat = audioExtractor.getTrackFormat(i)
             val mimeType = mediaFormat.getString(MediaFormat.KEY_MIME)
@@ -74,7 +76,7 @@ class AudioPlayer : Runnable{
 
                 //
                 try {
-                    audioCodec = MediaCodec.createDecoderByType(mimeType!!)
+                    audioCodec = MediaCodec.createDecoderByType(mimeType)
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
@@ -88,19 +90,22 @@ class AudioPlayer : Runnable{
         audioCodec.start()
         val decodeBufferInfo = MediaCodec.BufferInfo()
         while (mIsPlaying) {
+            // 如果线程卡了,音视频是不能同步的,就算有pts也不行
+//            Thread.sleep(50)
             val inputIndex = audioCodec.dequeueInputBuffer(10000)
             if (inputIndex < 0) {
                 mIsPlaying = false
             }
             val inputBuffer = audioCodec.getInputBuffer(inputIndex)
             inputBuffer!!.clear()
-            val sampleSize = audioExtractor.readSampleData(inputBuffer!!, 0)
+            val sampleSize = audioExtractor.readSampleData(inputBuffer, 0)
             if (sampleSize > 0) {
+                Log.i("sampleTime", "audio: ${audioExtractor.sampleTime}")
                 audioCodec.queueInputBuffer(
                     inputIndex,
                     0,
                     sampleSize,
-                    audioExtractor.sampleTime,
+                    audioExtractor.sampleTime, // presentationTimeUs：此buffer的PTS(以微秒为单位)。
                     0
                 )
                 audioExtractor.advance()
@@ -114,7 +119,7 @@ class AudioPlayer : Runnable{
                 outputBuffer = audioCodec.getOutputBuffer(outputIndex)
                 chunkPCM = ByteArray(decodeBufferInfo.size)
                 outputBuffer!![chunkPCM]
-                outputBuffer!!.clear()
+                outputBuffer.clear()
                 mAudioTrack!!.write(chunkPCM, 0, decodeBufferInfo.size)
                 audioCodec.releaseOutputBuffer(outputIndex, false)
                 outputIndex = audioCodec.dequeueOutputBuffer(decodeBufferInfo, 10000)
