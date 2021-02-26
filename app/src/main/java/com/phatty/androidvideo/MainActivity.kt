@@ -140,6 +140,10 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, H264PlayerActivity::class.java))
         }
 
+        val playMp4: Button = findViewById(R.id.btn_to_play_mp4)
+        playMp4.setOnClickListener {
+            startActivity(Intent(this, PlayMp4Activity::class.java))
+        }
     }
 
     private fun startRecord() {
