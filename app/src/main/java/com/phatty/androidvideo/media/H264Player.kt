@@ -9,6 +9,7 @@ import java.nio.ByteBuffer
 
 
 /**
+ * https://juejin.cn/post/6906018591310053389
  * @author jinguochong
  * @since  2021/2/24
  */
@@ -42,28 +43,32 @@ class H264Player(private val path: String, surface: Surface) : Runnable {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        // 获取队列
+
         var startIndex = 0
         var nextFrameStart: Int
         val totalCount = bytes!!.size
-        while (true) { // TODO 播放完停止
+        while (true) {
             if (startIndex >= totalCount) {
                 break
             }
             val info = MediaCodec.BufferInfo()
+            // 最大应该是 totalCount-1
             nextFrameStart = findFrame(bytes, startIndex + 1, totalCount)
-            // 往 ByteBuffer 中塞入数据
+            if (nextFrameStart == -1) {
+                break
+            }
             val index = mediaCodec!!.dequeueInputBuffer(10 * 1000.toLong())
-            Log.e("index", index.toString() + "")
+            Log.e("index", " $index  $nextFrameStart  $startIndex  ")
             // 获取 dsp 成功
-            startIndex = if (index >= 0) {
-                // 拿到可用的 ByteBuffer
+            if (index >= 0) {
+                // 拿到可用的 ByteBuffer, 这里获取输入流
                 val byteBuffer: ByteBuffer = mediaCodec!!.getInputBuffer(index)!!
                 byteBuffer.clear()
+                // 往 ByteBuffer 中塞入数据, 这里对应显示内容
                 byteBuffer.put(bytes, startIndex, nextFrameStart - startIndex)
                 // 识别分隔符，找到分隔符对应的索引
                 mediaCodec!!.queueInputBuffer(index, 0, nextFrameStart - startIndex, 0, 0)
-                nextFrameStart
+                startIndex = nextFrameStart
             } else {
                 continue
             }
@@ -83,7 +88,7 @@ class H264Player(private val path: String, surface: Surface) : Runnable {
     }
 
     private fun findFrame(bytes: ByteArray, startIndex: Int, totalSize: Int): Int {
-        for (i in startIndex until totalSize - 4) {
+        for (i in startIndex until totalSize - 5) {
             if (bytes[i] == 0.toByte() && bytes[i + 1] == 0.toByte()
                 && bytes[i + 2] == 0.toByte() && bytes[i + 3] == 1.toByte()
             ) {
